@@ -1,0 +1,115 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+def logEnable = "LOG"
+def isProduct = "isProduct"
+
+android {
+    signingConfigs {
+        debug {
+            storeFile file("keys/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+        logRelease {
+            storeFile file("keys/fsdcm.keystore")
+            storePassword "frontier"
+            keyAlias "mykey"
+            keyPassword "frontier"
+        }
+        release {
+            storeFile file("keys/fsdcm.keystore")
+            storePassword "frontier"
+            keyAlias "mykey"
+            keyPassword "frontier"
+        }
+    }
+
+    compileSdkVersion compile_sdk_version
+
+    defaultConfig {
+        applicationId "com.base.nguyencse.baseapplication"
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            buildConfigField "boolean", logEnable, "true"
+        }
+        logRelease {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.logRelease
+            buildConfigField "boolean", logEnable, "true"
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            buildConfigField "boolean", logEnable, "false"
+        }
+    }
+
+    flavorDimensions "product"
+    productFlavors {
+        development {
+            dimension "product"
+            buildConfigField "boolean", isProduct, "false"
+            applicationId "com.base.nguyencse.baseapplication.test"
+        }
+        staging {
+            dimension "product"
+            buildConfigField "boolean", isProduct, "false"
+            applicationId "com.base.nguyencse.baseapplication"
+        }
+        production {
+            dimension "product"
+            buildConfigField "boolean", isProduct, "true"
+            applicationId "com.base.nguyencse.baseapplication"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.android.support:appcompat-v7:$support_library_version"
+    implementation "com.android.support:support-v4:$support_library_version"
+    implementation "com.android.support:design:$support_library_version"
+    implementation "com.android.support:recyclerview-v7:$support_library_version"
+    implementation "com.android.support.constraint:constraint-layout:1.1.3"
+    implementation "com.android.support:multidex:1.0.3"
+
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
+    implementation "android.arch.lifecycle:extensions:$room_version"
+    annotationProcessor "android.arch.lifecycle:compiler:$room_version"
+
+    implementation "com.jakewharton:butterknife:$butter_knife_version"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butter_knife_version"
+
+    implementation 'com.intuit.sdp:sdp-android:1.0.5'
+    implementation 'com.intuit.ssp:ssp-android:1.0.5'
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
